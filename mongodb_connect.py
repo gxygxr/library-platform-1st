@@ -11,7 +11,7 @@ HOST = "127.0.0.1"
 PORT = 27017
 DATABASE = "library"
 USERNAME = "libWriter"      # 读写账号（角色 readWrite + dbAdmin）
-PASSWORD = "LibWrite@2024"  # 实训演示密码
+PASSWORD = "Writer@123"     # 实训演示密码（@ 在 URL 中需编码为 %40，这里用显式参数无需编码）
 
 _CLIENT = None  # 模块级缓存，避免多次调用重复建连
 
@@ -27,9 +27,8 @@ def get_client() -> MongoClient:
             port=PORT,
             username=USERNAME,
             password=PASSWORD,
-            authSource=DATABASE,  # 账号建立在 library 库上，认证库为 library
+            authSource="admin",  # 账号建立在 admin 库上
         )
-        # 发送一个命令确认连接可用
         _CLIENT.admin.command("ping")
     return _CLIENT
 
@@ -40,7 +39,6 @@ def get_db():
 
 
 if __name__ == "__main__":
-    # 自测：打印连接状态
     client = get_client()
     db = client[DATABASE]
     print("数据库连接成功 -> mongodb://{host}:{port}/{db}".format(
@@ -48,4 +46,3 @@ if __name__ == "__main__":
     for name in ["books", "readers", "borrow_logs", "category_stats"]:
         print("  集合 {0}: {1} 条文档".format(name, db[name].count_documents({})))
     client.close()
-#（注：内容由AI生成）
